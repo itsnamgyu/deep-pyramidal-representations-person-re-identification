@@ -149,7 +149,7 @@ def train(args, sample_size=(3, 384, 192), img_load_size=(408, 204)):
     # Need to drop the last batch due to the BatchNorm layer which cannot take a batch of size 1... which may happen depending on the args batchsize..
     # Let's also scale the batch size for the number of gpus
     num_gpus = 1 if (not torch.cuda.is_available() or net.use_gpu is False) else torch.cuda.device_count()
-    net.set_data_providers(data_provider, None, args.batch_size * num_gpus, None,
+    net.set_data_providers(data_provider, None, args.batch_size * 1, None,  # NAMGYU
                            num_workers=args.workers, train_drop_last_batch=True)
     # Init meters
     net.init_meters_and_plots(num_classes)
@@ -217,7 +217,7 @@ def train(args, sample_size=(3, 384, 192), img_load_size=(408, 204)):
     def _evaluate(epoch, is_train=True):
         if not is_train and (epoch+1) % args.epochs_eval == 0:
             args_eval = copy.deepcopy(args)
-            args_eval.batch_size=256
+            args_eval.batch_size=10  # NAMGYU
             args_eval.rerank = False
             evaluate(args_eval, net=net, sample_size=sample_size[1:], dset_train=dsetTr, dset_test=dsetTe,
                      layer_embeddings=layer_embeddings)
